@@ -1,10 +1,63 @@
-import { View, Text } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import React from 'react'
+import BookCard from '@/components/BookCard'
+
+const books = [
+  {
+    title: 'Elementary Mathematics I',
+    imgUrl: 'https://i.pinimg.com/236x/3a/dc/ff/3adcff7a670cde2ea2bb8ceadb6cceac.jpg',
+    price: 4500,
+    order_mode: 'Preorder',
+    course_code: 'MTH121',
+    has_ca: {
+      ca_price: 1700,
+      filling_price: 800
+    },
+    vendor: {
+      name: 'Vera world',
+    },
+  },
+  {
+    title: 'Use of Library',
+    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
+    price: 2850,
+    order_mode: 'Instant delivery',
+    course_code: 'GSP101',
+    has_ca: {
+      ca_price: 850,
+      filling_price: 200
+    },
+    vendor: {
+      name: 'Vera world',
+    },
+  },
+  {
+    title: 'Use of Library',
+    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
+    price: 2850,
+    order_mode: 'Instant delivery',
+    course_code: 'GSP101',
+    has_ca: {
+      ca_price: 850,
+      filling_price: 200
+    },
+    vendor: {
+      name: 'Vera world',
+    },
+  },
+]
 
 const Home = () => {
   return (
-    <View>
-      <Text>Home</Text>
+    <View className='p-5'>
+      <FlatList 
+        data={books}
+        contentContainerStyle={{  gap: 20, paddingBottom: 100, padding: 10 }}
+        showsVerticalScrollIndicator={false}
+        renderItem={({item}) => <BookCard book={item}/>}
+        numColumns={2}
+        columnWrapperStyle={{ gap: 10}}
+      />
     </View>
   )
 }

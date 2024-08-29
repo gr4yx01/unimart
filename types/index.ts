@@ -10,6 +10,25 @@ declare interface UniButtonProp extends TouchableOpacityProps {
     className?: string;
   }
 
+interface BookCardProp {
+  book: {
+    title: string;
+    imgUrl: string;
+    price: number;
+    order_mode: string;
+    course_code: string;
+    has_ca: {
+      ca_price: number;
+      filling_price: number;
+    }
+    vendor: {
+      name: string;
+    }
+  }
+}
+
+
   export {
-    UniButtonProp
+    UniButtonProp,
+    BookCardProp
   }

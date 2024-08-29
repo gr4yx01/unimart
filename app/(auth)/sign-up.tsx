@@ -8,9 +8,9 @@ import { router } from 'expo-router'
 const SignUp = () => {
   return (
     <View className='flex justify-center items-center h-screen w-full'>
-      <View className='w-full px-4'>
+      <View className='w-full px-8'>
         <View className='flex flex-col justify-center items-center p-5'>
-          <View className='mb-10 flex'>
+          <View className='mb-10 flex justify-center items-center'>
             <Text className='text-[50px] text-primary-500 font-JakartaExtraBold'>Unimart</Text>
             <Text className='text-lg font-JakartaMedium'>Create your account</Text>
           </View>
