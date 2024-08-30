@@ -9,6 +9,7 @@ const books = [
     price: 4500,
     order_mode: 'Preorder',
     course_code: 'MTH121',
+    delivery: 'Preorder',
     has_ca: {
       ca_price: 1700,
       filling_price: 800
@@ -23,6 +24,7 @@ const books = [
     price: 2850,
     order_mode: 'Instant delivery',
     course_code: 'GSP101',
+    delivery: 'Instant Delivery',
     has_ca: {
       ca_price: 850,
       filling_price: 200
@@ -32,15 +34,34 @@ const books = [
     },
   },
   {
-    title: 'Use of Library',
+    title: 'Principle of Statistics',
     imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
     price: 2850,
     order_mode: 'Instant delivery',
-    course_code: 'GSP101',
-    has_ca: {
-      ca_price: 850,
-      filling_price: 200
+    course_code: 'STA131',
+    delivery: 'Instant Delivery',
+    vendor: {
+      name: 'Vera world',
     },
+  },
+  {
+    title: 'Physics for Physical Science',
+    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
+    price: 2850,
+    order_mode: 'Preorder',
+    course_code: 'PHY135',
+    delivery: 'Instant Delivery',
+    vendor: {
+      name: 'Vera world',
+    },
+  },
+  {
+    title: 'General Biology',
+    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
+    price: 2850,
+    order_mode: 'Instant delivery',
+    course_code: 'BIO151',
+    delivery: 'Instant Delivery',
     vendor: {
       name: 'Vera world',
     },
@@ -49,14 +70,14 @@ const books = [
 
 const Home = () => {
   return (
-    <View className='p-5'>
+    <View className='p-5 pt-0'>
       <FlatList 
         data={books}
-        contentContainerStyle={{  gap: 20, paddingBottom: 100, padding: 10 }}
+        contentContainerStyle={{  gap: 20, paddingBottom: 100, padding: 5 }}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => <BookCard book={item}/>}
         numColumns={2}
-        columnWrapperStyle={{ gap: 10}}
+        columnWrapperStyle={{ gap: 5 }}
       />
     </View>
   )

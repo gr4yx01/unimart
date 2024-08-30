@@ -50,7 +50,7 @@ const Onboarding = () => {
       </Swiper>
       <UniButton 
         title={isLastSlide ? "Get Started" : "Next"} 
-        className="w-11/12 mt-10 mb-5"
+        className="w-11/12 mt-2 mb-5"
         onPress={() => {
             isLastSlide ? router.push('/(auth)/sign-up') : swiperRef.current?.scrollBy(1)
         }}

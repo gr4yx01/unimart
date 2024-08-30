@@ -17,7 +17,8 @@ interface BookCardProp {
     price: number;
     order_mode: string;
     course_code: string;
-    has_ca: {
+    delivery: string;
+    has_ca?: {
       ca_price: number;
       filling_price: number;
     }
