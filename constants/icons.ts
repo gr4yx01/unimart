@@ -19,6 +19,11 @@ import pin from "@/assets/icons/pin.png";
 import point from "@/assets/icons/point.png";
 import profile from "@/assets/icons/profile.png";
 import search from "@/assets/icons/search.png";
+import shoppingCart from '@/assets/icons/shopping-cart.png'
+import university from '@/assets/icons/university.png'
+import backpack from '@/assets/icons/backpack.png'
+import telephone from '@/assets/icons/telephone.png'
+import level from '@/assets/icons/level.png'
 
 export const icons = {
     arrowDown,
@@ -42,4 +47,9 @@ export const icons = {
     point,
     profile,
     search,
+    shoppingCart,
+    university,
+    backpack,
+    telephone,
+    level
   };

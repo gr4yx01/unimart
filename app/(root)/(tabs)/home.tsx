@@ -72,8 +72,20 @@ const Home = () => {
   return (
     <View className='p-5 pt-0'>
       <FlatList 
+        data={['All', 'Book','Perfume', 'Food', 'Laptops', 'Clothings', 'Phones', 'Room items']}
+        renderItem={({ item }) => (
+          <View className='bg-white p-2 px-5 flex justify-center items-center rounded-full'>
+            <Text className='font-JakartaSemiBold text-md'>{item}</Text>
+          </View>
+        )}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 10, paddingVertical: 5 }}
+        ListFooterComponent={() => <View className='pb-10'/>}
+      />
+      <FlatList 
         data={books}
-        contentContainerStyle={{  gap: 20, paddingBottom: 100, padding: 5 }}
+        contentContainerStyle={{  gap: 20, paddingBottom: 140, padding: 5 }}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => <BookCard book={item}/>}
         numColumns={2}

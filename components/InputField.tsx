@@ -9,7 +9,7 @@ const InputField = ({ placeholderText, label, icon, secureTextEntry }: { placeho
             <View className='gap-2 mb-5'>
                 {/* <Text className='font-JakartaSemiBold'>{label}</Text> */}
                 <View className='bg-white p-3 rounded-xl flex-row items-center'>
-                    <Image source={icon} className='w-8 h-8'/>
+                    <Image source={icon} className='w-6 h-6' resizeMode='contain'/>
                     <TextInput secureTextEntry={secureTextEntry} placeholder={placeholderText} className='font-JakartaBold text-md ml-2 w-full'/>
                 </View>
             </View>
