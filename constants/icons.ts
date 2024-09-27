@@ -24,8 +24,16 @@ import university from '@/assets/icons/university.png'
 import backpack from '@/assets/icons/backpack.png'
 import telephone from '@/assets/icons/telephone.png'
 import level from '@/assets/icons/level.png'
+import Business from '@/assets/icons/business.png'
+import Account from '@/assets/icons/account.png'
+import Bank from '@/assets/icons/bank.png'
+import product from '@/assets/icons/products.png'
+import user from '@/assets/icons/users.png'
+import orders from '@/assets/icons/orders.png'
+import contact from '@/assets/icons/contact.png'
 
 export const icons = {
+    contact,
     arrowDown,
     arrowUp,
     backArrow,
@@ -51,5 +59,11 @@ export const icons = {
     university,
     backpack,
     telephone,
-    level
+    level,
+    Business,
+    Account,
+    Bank,
+    product,
+    orders,
+    user
   };

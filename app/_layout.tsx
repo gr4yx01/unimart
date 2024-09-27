@@ -1,12 +1,13 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import React from 'react';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
+import tokenCache from '@/utils/cache';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -20,6 +21,14 @@ export default function RootLayout() {
     JakartaSemiBold: require('../assets/fonts/PlusJakartaSans-SemiBold.ttf'),
   });
 
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
+  if (!publishableKey) {
+    throw new Error(
+      'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
+    )
+  }
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -30,10 +39,22 @@ export default function RootLayout() {
     return null;
   }
 
+  const client = new ApolloClient({
+    uri: 'http://192.168.1.187:4000/graphql',  
+    cache: new InMemoryCache(),
+  });
+
   return (
-      <Stack initialRouteName='index'>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(root)" options={{ headerShown: false }} />
-      </Stack>
+    <ApolloProvider client={client}>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <ClerkLoaded>
+          <Stack initialRouteName='index'>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(root)" options={{ headerShown: false }} />
+          </Stack>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </ApolloProvider>
   );
 }

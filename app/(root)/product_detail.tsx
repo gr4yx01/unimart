@@ -3,6 +3,7 @@ import React from 'react'
 import UniButton from '@/components/UniButton'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useProductStore } from '@/store/product'
 
 const book = {
     title: 'Elementary Mathematics I',
@@ -23,6 +24,7 @@ const book = {
   }
 
 const BookDetail = () => {
+  const productDetail = useProductStore((state) => state.product)
   return (
     <View className='relative h-screen'>
             <View className='relative'>

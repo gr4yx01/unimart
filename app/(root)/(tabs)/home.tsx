@@ -1,95 +1,98 @@
-import { View, Text, FlatList } from 'react-native'
-import React from 'react'
-import BookCard from '@/components/BookCard'
-
-const books = [
-  {
-    title: 'Elementary Mathematics I',
-    imgUrl: 'https://i.pinimg.com/236x/3a/dc/ff/3adcff7a670cde2ea2bb8ceadb6cceac.jpg',
-    price: 4500,
-    order_mode: 'Preorder',
-    course_code: 'MTH121',
-    delivery: 'Preorder',
-    has_ca: {
-      ca_price: 1700,
-      filling_price: 800
-    },
-    vendor: {
-      name: 'Vera world',
-    },
-  },
-  {
-    title: 'Use of Library',
-    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
-    price: 2850,
-    order_mode: 'Instant delivery',
-    course_code: 'GSP101',
-    delivery: 'Instant Delivery',
-    has_ca: {
-      ca_price: 850,
-      filling_price: 200
-    },
-    vendor: {
-      name: 'Vera world',
-    },
-  },
-  {
-    title: 'Principle of Statistics',
-    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
-    price: 2850,
-    order_mode: 'Instant delivery',
-    course_code: 'STA131',
-    delivery: 'Instant Delivery',
-    vendor: {
-      name: 'Vera world',
-    },
-  },
-  {
-    title: 'Physics for Physical Science',
-    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
-    price: 2850,
-    order_mode: 'Preorder',
-    course_code: 'PHY135',
-    delivery: 'Instant Delivery',
-    vendor: {
-      name: 'Vera world',
-    },
-  },
-  {
-    title: 'General Biology',
-    imgUrl: 'https://i.pinimg.com/236x/e8/fd/64/e8fd642f026f7ca3c889d0eea95b0b1c.jpg',
-    price: 2850,
-    order_mode: 'Instant delivery',
-    course_code: 'BIO151',
-    delivery: 'Instant Delivery',
-    vendor: {
-      name: 'Vera world',
-    },
-  },
-]
+import { View, Text, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
+import { useState, useEffect } from 'react'
+import { useQuery } from '@apollo/client'
+import { GET_PRODUCTS } from '@/graphql/queries/products'
+import ProductCard from '@/components/ProductCard'
 
 const Home = () => {
+  const { data: fetchedProducts, refetch } = useQuery(GET_PRODUCTS)
+  const [selected, setSelected] = useState('FOOD')
+  const [products, setProduct] = useState([])
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  console.log(fetchedProducts)
+
+  // Handle pull-to-refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refetch(); // Refetch the data from GraphQL
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    setRefreshing(false);
+  };
+
+  // useEffect(() => {
+  //   setProduct(fetchedProducts?.availableProducts?.filter((product: any) => product?.category === selected))
+  // }, [])
+
+  useEffect(() => {
+    const filtered = fetchedProducts?.availableProducts?.filter((product: any) => product?.category === selected)
+    setProduct(filtered)
+  }, [selected])
+
+  const categories = [
+    {
+      label: 'Food',
+      value: 'FOOD'
+    },
+    {
+      label: 'Perfume',
+      value: 'PERFUME'
+    },
+    {
+      label: 'Book',
+      value: 'BOOK'
+    },
+    {
+      label: 'Laptops',
+      value: 'LAPTOPS'
+    },
+    {
+      label: 'Clothings',
+      value: 'CLOTHING'
+    },
+    {
+      label: 'Phones',
+      value: 'PHONES'
+    },
+    {
+      label: 'Room Items',
+      value: 'ROOM ITEMS'
+    },
+  ]
+  
   return (
     <View className='p-5 pt-0'>
-      <FlatList 
-        data={['All', 'Book','Perfume', 'Food', 'Laptops', 'Clothings', 'Phones', 'Room items']}
-        renderItem={({ item }) => (
-          <View className='bg-white p-2 px-5 flex justify-center items-center rounded-full'>
-            <Text className='font-JakartaSemiBold text-md'>{item}</Text>
-          </View>
+      <FlatList
+        data={categories}
+        renderItem={({ item }: { item: any}) => (
+          <TouchableOpacity onPress={() => setSelected(item?.value)} className={`${selected === item?.value ? 'bg-primary-500': 'bg-white'}  p-2 px-5 flex justify-center items-center rounded-full`}>
+            <Text className={`font-JakartaSemiBold text-md ${selected === item?.value ? 'text-white': 'text-black'}`}>{item?.label}</Text>
+          </TouchableOpacity>
         )}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 10, paddingVertical: 5 }}
         ListFooterComponent={() => <View className='pb-10'/>}
       />
-      <FlatList 
-        data={books}
+      <FlatList
+        data={products}
         contentContainerStyle={{  gap: 20, paddingBottom: 140, padding: 5 }}
         showsVerticalScrollIndicator={false}
-        renderItem={({item}) => <BookCard book={item}/>}
+        renderItem={({item}: { item: any}) => <ProductCard book={item}/>}
         numColumns={2}
         columnWrapperStyle={{ gap: 5 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={() => (
+          <View>
+            <Text>No Products</Text>
+          </View>
+        )}
       />
     </View>
   )

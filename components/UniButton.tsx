@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { UniButtonProp } from '@/types';
 
@@ -32,7 +32,7 @@ const getBgVariantStyle = (variant: UniButtonProp["bgVariant"]) => {
     }
   };
 
-const UniButton = ({title, onPress, bgVariant, IconLeft, IconRight, className, textVariant="default", ...props}: UniButtonProp) => {
+const UniButton = ({title, onPress, bgVariant, IconLeft, IconRight, loading, className, textVariant="default", ...props}: UniButtonProp) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -40,9 +40,12 @@ const UniButton = ({title, onPress, bgVariant, IconLeft, IconRight, className, t
       {...props}
     >
       {IconLeft && <IconLeft />}
-      <Text className={`text-lg font-bold ${getTextVariantStyle(textVariant)}`}>
-        {title}
-      </Text>
+      { loading ? <ActivityIndicator size="small" color="#fff" /> : (
+        <Text className={`text-lg font-bold ${getTextVariantStyle(textVariant)}`}>
+          {title}
+        </Text>
+
+      )}
       {IconRight && <IconRight />}
     </TouchableOpacity>
   )
