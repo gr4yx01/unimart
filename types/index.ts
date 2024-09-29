@@ -16,11 +16,13 @@ declare interface UniButtonProp extends TouchableOpacityProps {
 
 
 interface ProductCardProp {
-  book: {
+  product: {
+    id: string
     name: string
     price: number
     thumbnail: string
     category: string
+    description: string
     stock: number
     rating: number
     vendor:  {

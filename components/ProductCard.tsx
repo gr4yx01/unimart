@@ -5,21 +5,22 @@ import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-ico
 import { router } from 'expo-router'
 import { useProductStore } from '@/store/product'
 
-const ProductCard = ({ book: { name, thumbnail, price, rating, stock, vendor }}: ProductCardProp ) => {
+const ProductCard = ({ product: { id, name, thumbnail, price, rating, stock, vendor, description }}: ProductCardProp ) => {
   const setProduct = useProductStore((state) => state.setProduct)
   const routeToDetail = () => {
     setProduct({
+      id,
       name,
       thumbnail,
+      description,
       price,
       rating,
       stock,
       vendor
     })
-    router.push('/(root)/book_detail')
+    router.push('/(root)/product_detail')
   }
 
-  console.log(vendor)
   return (
     <TouchableOpacity onPress={routeToDetail} className='bg-white h-fit w-[50%] rounded-tl-lg rounded-tr-lg'>
         <Image source={{ uri: thumbnail }} resizeMode='cover' className='h-40 rounded-tl-lg rounded-tr-lg'/>
