@@ -13,26 +13,15 @@ const Payment = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Hello</Text>
-      <Text>Becoming the best ever</Text>
+    <>
       <LottieView
-        source={require('../../assets/animation/successful.json')}
+        source={require('../../assets/animation/success.json')}
         style={{ flex: 1 }}
         autoPlay
         loop
       />
-    </View>
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
 
 export default Payment;

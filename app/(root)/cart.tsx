@@ -54,27 +54,13 @@ const Cart = () => {
                 subaccounts: data
             }
         })
+
+        console.log(paymentResponse);
         // setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        // setAuthorizationUrl('https://checkout.paystack.com/d0xi6emzdov0pj0')
-
-        // const supported = await Linking.canOpenURL('https://checkout.paystack.com/d0xi6emzdov0pj0')
-
-        // if(supported) {
-        //     await Linking.openURL('https://checkout.paystack.com/d0xi6emzdov0pj0')
-        // } else {
-        //     console.log('Cannot open URL')
-        // }
         // console.log(paymentResponse?.createPaymentSession?.data?.authorization_url)
         // router.push('/(root)/payment')
     }
 
-    // {authorizationUrl && showPaymentWebView && (
-    //         <PaystackPayment
-    //             authorizationUrl={authorizationUrl}
-    //             // onPaymentSuccess={handlePaymentSuccess}
-    //             // onPaymentFailure={handlePaymentFailure}
-    //         />
-    //     )}
     
   return (
     <SafeAreaView className='relative h-screen p-3 space-y-4'>
