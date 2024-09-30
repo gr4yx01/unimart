@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import { icons } from '@/constants/icons'
 import { GET_PRODUCTS } from '@/graphql/queries/products'
+import { useCartStore } from '@/store/cart'
 import { useAvailableProductsStore } from '@/store/products'
 import { useQuery } from '@apollo/client'
 import { Tabs } from 'expo-router'
@@ -10,6 +11,7 @@ import { View, Image, ImageSourcePropType } from 'react-native'
 const Layout = () => {
   const { data: fetchedProducts } = useQuery(GET_PRODUCTS)
   const setProducts = useAvailableProductsStore((state) => state.setProducts)
+  
 
   useEffect(() => {
     setProducts(fetchedProducts?.availableProducts)

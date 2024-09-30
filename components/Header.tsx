@@ -4,8 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { icons } from '@/constants/icons'
 import { Feather } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { useCartStore } from '@/store/cart'
 
 const Header = () => {
+  const cart = useCartStore((state) => state.products)
+
   return (
     <SafeAreaView>
       <View className='p-4 gap-4'>
@@ -13,7 +16,7 @@ const Header = () => {
             <Text className='font-JakartaExtraBold '>Welcome back 👋</Text>
             <TouchableOpacity onPress={() => router.push('/(root)/cart')} className='relative'>
               <View className='absolute text-[8px] -right-1 -top-2 w-4 h-4 flex flex-row justify-center items-center rounded-full bg-primary-500'>
-                <Text className='text-white text-xs'>1</Text>
+                <Text className='text-white text-xs'>{cart?.length}</Text>
               </View>
               <Feather name="shopping-cart" size={24} color="black" />
             </TouchableOpacity>

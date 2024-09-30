@@ -7,6 +7,7 @@ interface initialState {
 interface Actions {
     addProductToCart: (product: any) => void;
     removeProductFromCart: (product: any) => void;
+    removeAll: () => void
 }
 
 export const useCartStore = create<initialState & Actions>((set) => ({
@@ -22,6 +23,9 @@ export const useCartStore = create<initialState & Actions>((set) => ({
         } else {
             return { products: [...state.products, product] }
         }
+    }),
+    removeAll: () => set(() => {
+        return { products: [] }
     }),
     removeProductFromCart: (product) => set((state) => ({
         products: state.products.filter(item => item?.id !== product?.id)

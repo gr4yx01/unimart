@@ -9,8 +9,7 @@ const Index = () => {
   const { isSignedIn } = useAuth()
   
   if (isSignedIn) {
-    // return <Redirect href={'/(root)/(tabs)/home'} />
-    return <Redirect href={`/(root)/payment`} />
+    return <Redirect href={'/(root)/(tabs)/home'} />
   } else {
     return <Redirect href='/(auth)/welcome' />
   }

@@ -11,6 +11,7 @@ import { useUser } from '@clerk/clerk-expo'
 import PaystackPayment from '@/components/PaystackPayment'
 import { usePaymentStore } from '@/store/payment'
 import * as WebBrowser from 'expo-web-browser'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Cart = () => {
     const { user } = useUser();
@@ -19,6 +20,7 @@ const Cart = () => {
     const setReference = usePaymentStore((state) => state.setReference)
     const reference = usePaymentStore((state) => state.reference)
     const setIsPolling = usePaymentStore((state) => state.setIsPolling)
+    const [proceedToPaystack, setProceedToPaystack] = useState(false)
 
     const [showPaymentWebView, setShowPaymentWebView] = useState(false)
 
@@ -64,15 +66,24 @@ const Cart = () => {
         // console.log(paymentResponse);
         setReference(paymentResponse?.createPaymentSession?.data?.reference)
         setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        setTimeout(() => {
-            setLoading(false)
-            setIsPolling(true)
-            router.push('/(root)/payment')
-        }, 60000)
+        setLoading(false)
+        setProceedToPaystack(true)
+        // setTimeout(() => {
+        //     setLoading(false)
+        //     setIsPolling(true)
+        // }, 60000)
+    }
+    
+    const proceedToConfirmPayment = async () => {
+        setIsPolling(true)
+        console.log('working')
+        router.push('/(root)/payment')
     }
 
     
   return (
+    <GestureHandlerRootView>
+
     <SafeAreaView className='relative h-screen p-3 space-y-4'>
         <View className='p-2 flex flex-row space-x-4 items-center'>
             <TouchableOpacity className=' bg-gray-400 p-2 rounded-full' onPress={() => router.back()}>
@@ -113,11 +124,22 @@ const Cart = () => {
         />
 
         <UniButton
-            title='Checkout'
-            onPress={makePayment}
+            title="Checkout"
+            onPress={ makePayment}
             loading={loading}
         />
+
+        {
+            proceedToPaystack && (
+                <UniButton
+                title="I have paid"
+                onPress={proceedToConfirmPayment}
+                />
+            )
+        }
     </SafeAreaView>
+    </GestureHandlerRootView>
+
   )
 }
 
