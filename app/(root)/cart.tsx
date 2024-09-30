@@ -30,17 +30,16 @@ const Cart = () => {
         return amount;
     }
 
-    useEffect(() => {
-        const routeToPaystack = async () => {
-            await WebBrowser.openBrowserAsync(authorizationUrl)
-        }
+    // useEffect(() => {
+    //     const routeToPaystack = async () => {
+    //         await WebBrowser.openBrowserAsync(authorizationUrl)
+    //     }
 
-        if(authorizationUrl) {
-            routeToPaystack()
-        }
-    }, [authorizationUrl])
+    //     if(authorizationUrl) {
+    //         routeToPaystack()
+    //     }
+    // }, [authorizationUrl])
 
-    
     const makePayment = async () => {
         const data = cart?.map((product) => {
             return {
@@ -55,7 +54,7 @@ const Cart = () => {
                 subaccounts: data
             }
         })
-        setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
+        // setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
         // setAuthorizationUrl('https://checkout.paystack.com/d0xi6emzdov0pj0')
 
         // const supported = await Linking.canOpenURL('https://checkout.paystack.com/d0xi6emzdov0pj0')

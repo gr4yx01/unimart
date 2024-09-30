@@ -1,46 +1,38 @@
-// import WebViewComponent from '@/components/PaystackPayment';
-// import UniButton from '@/components/UniButton';
-// import { usePaymentStore } from '@/store/payment';
-// import React, { useState } from 'react';
-// import { View, Button } from 'react-native';
+import UniButton from '@/components/UniButton';
+import { usePaymentStore } from '@/store/payment';
+import React, { useState } from 'react';
+import { View, Button, StyleSheet, Text } from 'react-native';
+import LottieView from 'lottie-react-native';
 
-// const Payment = () => {
-//   const [showWebView, setShowWebView] = useState(false);
-//   const authorizationUrl  = usePaymentStore((state) => state.authorizationUrl)
-//   const [url, setUrl] = useState('');
+const Payment = () => {
+  const authorizationUrl  = usePaymentStore((state) => state.authorizationUrl)
+  const [url, setUrl] = useState('');
 
-//   const handleOpenWebView = () => {
-//     setUrl(authorizationUrl); // Replace with the URL you want to display
-//     setShowWebView(true);
-//   };
+  const handleOpenWebView = () => {
+    setUrl(authorizationUrl); // Replace with the URL you want to display
+  };
 
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <UniButton
-//         title="Open WebView"
-//         onPress={handleOpenWebView}
-//       />
-//       {showWebView && <WebViewComponent url={url} />}
-//     </View>
-//   );
-// };
-
-// export default Payment;
-
-import Constants from 'expo-constants';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
   return (
-    <View>
+    <View style={styles.container}>
       <Text>Hello</Text>
+      <Text>Becoming the best ever</Text>
+      <LottieView
+        source={require('../../assets/animation/successful.json')}
+        style={{ flex: 1 }}
+        autoPlay
+        loop
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
+
+export default Payment;
