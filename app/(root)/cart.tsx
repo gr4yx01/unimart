@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, Image, FlatList, Linking } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Entypo, Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,12 +10,16 @@ import { CREATE_PAYMENT_SESSION } from '@/graphql/mutation/payment'
 import { useUser } from '@clerk/clerk-expo'
 import PaystackPayment from '@/components/PaystackPayment'
 import { usePaymentStore } from '@/store/payment'
+import * as WebBrowser from 'expo-web-browser'
 
 const Cart = () => {
     const { user } = useUser();
     const cart = useCartStore((state) => state.products)
-    const setAuthorizationUrl = usePaymentStore((state) => state.setAuthorizationUrl)
+    // const setAuthorizationUrl = usePaymentStore((state) => state.setAuthorizationUrl)
     const [showPaymentWebView, setShowPaymentWebView] = useState(false)
+
+    const [authorizationUrl, setAuthorizationUrl] = useState('')
+
     
     const [createPaymentSession] = useMutation(CREATE_PAYMENT_SESSION)
 
@@ -26,6 +30,17 @@ const Cart = () => {
         return amount;
     }
 
+    useEffect(() => {
+        const routeToPaystack = async () => {
+            await WebBrowser.openBrowserAsync(authorizationUrl)
+        }
+
+        if(authorizationUrl) {
+            routeToPaystack()
+        }
+    }, [authorizationUrl])
+
+    
     const makePayment = async () => {
         const data = cart?.map((product) => {
             return {
@@ -41,7 +56,17 @@ const Cart = () => {
             }
         })
         setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        router.push('/(root)/payment')
+        // setAuthorizationUrl('https://checkout.paystack.com/d0xi6emzdov0pj0')
+
+        // const supported = await Linking.canOpenURL('https://checkout.paystack.com/d0xi6emzdov0pj0')
+
+        // if(supported) {
+        //     await Linking.openURL('https://checkout.paystack.com/d0xi6emzdov0pj0')
+        // } else {
+        //     console.log('Cannot open URL')
+        // }
+        // console.log(paymentResponse?.createPaymentSession?.data?.authorization_url)
+        // router.push('/(root)/payment')
     }
 
     // {authorizationUrl && showPaymentWebView && (

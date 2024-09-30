@@ -7,6 +7,8 @@ import React from 'react';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
 import tokenCache from '@/utils/cache';
+import * as Linking from 'expo-linking';
+import { Alert } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +22,40 @@ export default function RootLayout() {
     JakartaRegular: require('../assets/fonts/PlusJakartaSans-Regular.ttf'),
     JakartaSemiBold: require('../assets/fonts/PlusJakartaSans-SemiBold.ttf'),
   });
+
+  useEffect(() => {
+    // This will handle the deep link when the app is already open
+    const handleDeepLink = (event: any) => {
+      const url = event.url;
+      const parsedData = Linking.parse(url);
+      console.log('Parsed deep link:', parsedData);
+
+      // Check for specific path and query parameters
+      if (parsedData.path === 'payment-success') {
+        const transactionReference = parsedData.queryParams?.reference;
+        Alert.alert('Payment Success', `Transaction Reference: ${transactionReference}`);
+        // Now verify the payment with your backend using this reference
+      }
+    };
+
+    // This listens for URL events when the app is already open
+    Linking.addEventListener('url', handleDeepLink);
+
+    // Handle deep links when the app is launched from a URL
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        const parsedData = Linking.parse(url);
+        console.log('Parsed initial deep link:', parsedData);
+
+        if (parsedData.path === 'payment-success') {
+          const transactionReference = parsedData.queryParams?.reference;
+          Alert.alert('Payment Success', `Transaction Reference: ${transactionReference}`);
+          // Verify the payment with your backend here
+        }
+      }
+    });
+
+  }, []);
 
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
