@@ -16,9 +16,14 @@ const Cart = () => {
     const { user } = useUser();
     const cart = useCartStore((state) => state.products)
     // const setAuthorizationUrl = usePaymentStore((state) => state.setAuthorizationUrl)
+    const setReference = usePaymentStore((state) => state.setReference)
+    const reference = usePaymentStore((state) => state.reference)
+    const setIsPolling = usePaymentStore((state) => state.setIsPolling)
+
     const [showPaymentWebView, setShowPaymentWebView] = useState(false)
 
     const [authorizationUrl, setAuthorizationUrl] = useState('')
+    const [loading, setLoading] = useState(false)
 
     
     const [createPaymentSession] = useMutation(CREATE_PAYMENT_SESSION)
@@ -30,17 +35,18 @@ const Cart = () => {
         return amount;
     }
 
-    // useEffect(() => {
-    //     const routeToPaystack = async () => {
-    //         await WebBrowser.openBrowserAsync(authorizationUrl)
-    //     }
+    useEffect(() => {
+        const routeToPaystack = async () => {
+            await WebBrowser.openBrowserAsync(authorizationUrl)
+        }
 
-    //     if(authorizationUrl) {
-    //         routeToPaystack()
-    //     }
-    // }, [authorizationUrl])
+        if(authorizationUrl) {
+            routeToPaystack()
+        }
+    }, [authorizationUrl])
 
     const makePayment = async () => {
+        setLoading(true)
         const data = cart?.map((product) => {
             return {
                 email,
@@ -55,10 +61,14 @@ const Cart = () => {
             }
         })
 
-        console.log(paymentResponse);
-        // setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        // console.log(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        // router.push('/(root)/payment')
+        // console.log(paymentResponse);
+        setReference(paymentResponse?.createPaymentSession?.data?.reference)
+        setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
+        setTimeout(() => {
+            setLoading(false)
+            setIsPolling(true)
+            router.push('/(root)/payment')
+        }, 60000)
     }
 
     
@@ -105,6 +115,7 @@ const Cart = () => {
         <UniButton
             title='Checkout'
             onPress={makePayment}
+            loading={loading}
         />
     </SafeAreaView>
   )

@@ -102,7 +102,7 @@ const ProfileSetup = () => {
       
       await SecureStore.setItemAsync('userId', JSON.stringify(userDetail?.createUser?.id));
       setSetupModal(true)
-    } catch (err) {
+    } catch (err: any) {
       Alert.alert(err);
       setSetupModal(false);
     }
