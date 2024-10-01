@@ -9,6 +9,10 @@ const GET_ORDERS = gql`
     payment_reference
     items {
       amount
+      product {
+        name
+        price
+      }
       confirmed_payment
       out_for_delivery
       delivered
