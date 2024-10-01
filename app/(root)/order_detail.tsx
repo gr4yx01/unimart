@@ -1,3 +1,4 @@
+import { useOrderState } from '@/store/order';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
@@ -10,6 +11,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OrderDetail() {
+  const order = useOrderState((state) => state.order)
+
+  console.log(order)
+
+  
   return (
     <View className="flex-1">
       <SafeAreaView className="flex-1 bg-white">
