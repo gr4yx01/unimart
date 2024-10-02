@@ -1,21 +1,39 @@
+import InputField from '@/components/InputField';
+import UniButton from '@/components/UniButton';
 import { useOrderState } from '@/store/order';
 import { formatDate } from '@/utils/helper';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
   Text,
   TouchableOpacity,
   FlatList,
+  Image,
+  Alert,
 } from 'react-native';
+import ReactNativeModal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OrderDetail() {
   const order: any = useOrderState((state) => state.order)
+  const [openRating, setOpenRating] = useState(false)
 
   console.log(order)
+
+  const openRatingModal = (item: any) => {
+    if (item?.delivered) {
+      setOpenRating(true)
+    }else {
+      Alert.alert('Order not delivered yet')
+    }
+  }
+
+  const handleRating = async (item: any) => {
+
+  }
 
   return (
     <View className="flex-1">
@@ -35,9 +53,7 @@ export default function OrderDetail() {
             <View className="w-10 h-10 justify-center items-end" />
           </View>
 
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 140 }}
-            showsVerticalScrollIndicator={false}
+          <View
             className="pt-4"
           >
             <View className="w-15 h-15rounded-full mb-3 items-center justify-center">
@@ -79,36 +95,63 @@ export default function OrderDetail() {
               </View>
             </View>
             <View className="overflow-hidden w-full my-6 border-t-2 border-dashed border-gray-300" />
-            <FlatList 
+          </View>
+          <Text className='font-JakartaMedium'>Click on items to give your rating</Text>
+            <FlatList
               data={order?.items}
+              contentContainerStyle={{ paddingTop: 10, gap: 15 }}
               renderItem={({item}) => (
-                <View className='flex flex-row justify-betweeen items-center w-full'>
+                <TouchableOpacity onPress={() => openRatingModal(item)} className='flex flex-row justify-betweeen items-center w-full bg-primary-200 p-3 rounded-lg'>
+                  <Image source={{ uri: item?.product?.thumbnail }} className='w-10 h-10 rounded-full mr-2' resizeMode="cover" />
                   <View className='flex-1'>
                     <Text className='font-JakartaSemiBold text-lg'>{item?.product?.name}</Text>
                     <Text className='font-JakartaMedium'>N{item?.product?.price}</Text>
                   </View>
                   <View className=''>
                       {
+                        (!item?.confirmed_payment && !item?.out_for_delivery && !item?.delivered ) && (
+                          <Text className='text-sm font-JakartaMedium text-green-500'>Waiting</Text>
+                        )
+                      }
+                      {
                         (item?.confirmed_payment && !item?.out_for_delivery && !item?.delivered ) && (
-                          <Text className='text-sm font-JakartaMedium'>Payment confirmed</Text>
+                          <Text className='text-sm font-JakartaMedium text-green-500'>Payment confirmed</Text>
                         )
                       }
                       {
                         (item?.confirmed_payment && item?.out_for_delivery && !item?.delivered ) && (
-                          <Text>Out for delivery</Text>
+                          <Text className='text-sm font-JakartaMedium'>Out for delivery</Text>
                         )
                       }
                       {
                         (item?.confirmed_payment && item?.out_for_delivery && item?.delivered ) && (
-                          <Text>Delivered</Text>
+                          <Text className='text-sm font-JakartaMedium text-green-500'>Delivered</Text>
                         )
                       }
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
             />
-          </ScrollView>
         </View>
+
+        <ReactNativeModal isVisible={openRating}>
+          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+            <Text className="text-3xl font-JakartaBold text-center">
+              Kindly rate vendor and product
+            </Text>
+            <Text>Vendor</Text>
+            <InputField label='Rate vendor' placeholderText='Rate vendor' onChangeText={() => {}}/>
+            <InputField label='Rate Product' placeholderText='Rate vendor' onChangeText={() => {}}/>
+            <UniButton
+              title="Done"
+              onPress={() =>  {
+                // setVerified(false)
+                setOpenRating(false)
+              }}
+              className="mt-5"
+            />
+          </View>
+        </ReactNativeModal>
       </SafeAreaView>
     </View>
   );

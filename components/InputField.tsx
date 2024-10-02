@@ -11,17 +11,20 @@ interface InputFieldProp {
   togglePasswordVisibility?: () => void
   onChangeText: (value: string) => void
   value?: string
+  bordered?: boolean
+  keyboard_type?: string
 }
 
-const InputField = ({ placeholderText, label, icon, togglePasswordVisibility, secureTextEntry, password,  onChangeText, value }: InputFieldProp ) => {
+const InputField = ({ placeholderText, label, icon, togglePasswordVisibility, secureTextEntry, password,  onChangeText, value, bordered, keyboard_type }: InputFieldProp ) => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <TouchableWithoutFeedback>
             <View className='gap-2 mb-5'>
                 {/* <Text className='font-JakartaSemiBold'>{label}</Text> */}
-                <View className='bg-white p-3 rounded-xl flex-row items-center relative'>
+                <Text className='font-JakartaSemiBold'>{label}</Text>
+                <View className={`bg-white p-3 rounded-xl flex-row items-center relative ${!bordered && "border border-gray-200" }`}>
                   { icon && <Image source={icon} className='w-6 h-6' resizeMode='contain'/> }
-                    <TextInput secureTextEntry={secureTextEntry} placeholder={placeholderText} value={value} className={`font-JakartaBold text-md ml-2 w-full`} onChangeText={onChangeText}/>
+                    <TextInput secureTextEntry={secureTextEntry} keyboardType={`${keyboard_type ? `${keyboard_type}` : "number-pad"}`}placeholder={placeholderText} value={value} className={`font-JakartaBold text-md ml-2 w-full`} onChangeText={onChangeText}/>
                     {
                       password && (
                         <TouchableOpacity onPress={togglePasswordVisibility} className='absolute right-3'>

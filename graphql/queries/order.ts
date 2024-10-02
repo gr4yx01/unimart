@@ -12,6 +12,7 @@ const GET_ORDERS = gql`
       product {
         name
         price
+        thumbnail
       }
       confirmed_payment
       out_for_delivery

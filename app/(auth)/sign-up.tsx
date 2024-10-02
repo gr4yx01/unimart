@@ -91,7 +91,7 @@ const SignUp = () => {
           <UniButton title='Sign Up' onPress={onSignUpPress} loading={loading}/>
           <View className='flex flex-row gap-1 items-center'>
             <Text className='font-JakartaMedium'>Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')}>
+            <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}> { /** change to sign in */}
               <Text className='font-JakartaSemiBold text-primary-500'>Sign in</Text>
             </TouchableOpacity>
           </View>
