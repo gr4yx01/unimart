@@ -24,6 +24,7 @@ const getOrderStatusColor = (value: string) => {
 const Order = () => {
   const setOrder = useOrderState((state) => state.setOrder)
   const userId = 'cm1kq30sl0003vto9ycu6l43z'
+  // const userId = SecureStore.getItemAsync('userId');
   const { data } = useQuery(GET_ORDERS, {
     variables: {
       userId
@@ -35,7 +36,6 @@ const Order = () => {
     router.push('/(root)/order_detail')
   }
 
-  // const userId = SecureStore.getItemAsync('userId');
 
   return (
     <SafeAreaView>

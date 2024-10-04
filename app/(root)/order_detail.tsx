@@ -1,13 +1,14 @@
 import InputField from '@/components/InputField';
 import UniButton from '@/components/UniButton';
+import { RATE_PRODUCT, RATE_VENDOR } from '@/graphql/mutation/order';
 import { useOrderState } from '@/store/order';
 import { formatDate } from '@/utils/helper';
+import { useMutation } from '@apollo/client';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
   View,
-  ScrollView,
   Text,
   TouchableOpacity,
   FlatList,
@@ -20,10 +21,27 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function OrderDetail() {
   const order: any = useOrderState((state) => state.order)
   const [openRating, setOpenRating] = useState(false)
-
-  console.log(order)
+  const [rateProduct] = useMutation(RATE_PRODUCT)
+  const [rateVendor] = useMutation(RATE_VENDOR)
+  const [loading, setLoading] = useState(false)
+  const [detail, setDetail] = useState<{
+    vendorRate: number | null,
+    productRate: number | null,
+    vendorId: string,
+    productId: string
+  }>({
+    vendorId: '',
+    productId: '',
+    vendorRate:  null,
+    productRate: null
+  })
 
   const openRatingModal = (item: any) => {
+    setDetail({
+      ...detail,
+      vendorId: item?.product?.vendor?.id,
+      productId: item?.product?.id
+    })
     if (item?.delivered) {
       setOpenRating(true)
     }else {
@@ -31,8 +49,37 @@ export default function OrderDetail() {
     }
   }
 
-  const handleRating = async (item: any) => {
+  const handleRating = async () => {
+    try {
+      setLoading(true)
+      if(detail?.productRate !== null && detail?.vendorRate !== null) {
 
+        const { data: product } = await rateProduct({
+          variables: {
+            id: detail?.productId,
+            rating: detail?.productRate
+          }
+        })
+
+        
+       const { data: vendor} = await rateVendor({
+          variables: {
+            id: detail?.vendorId,
+            rating: detail?.vendorRate
+          }
+        })
+        
+        console.log(product)
+        console.log(vendor)
+        setOpenRating(false)
+      } else {
+        Alert.alert('Kindly leave us a rating')
+      }
+        setLoading(false)
+    } catch(err: any) {
+      setLoading(false)
+      Alert.alert(err)
+    }
   }
 
   return (
@@ -88,15 +135,15 @@ export default function OrderDetail() {
               </View>
 
               <View className="flex-row items-start justify-between mb-3">
-                <Text className="text-base leading-5 font-medium text-gray-600">Category</Text>
+                <Text className="text-base leading-5 font-medium text-gray-600">Status</Text>
                 <Text className="text-sm leading-5 font-semibold text-gray-700 text-right">
-                  Development
+                  {order?.status}
                 </Text>
               </View>
             </View>
             <View className="overflow-hidden w-full my-6 border-t-2 border-dashed border-gray-300" />
           </View>
-          <Text className='font-JakartaMedium'>Click on items to give your rating</Text>
+          <Text className='font-JakartaSemiBold'>Click on items to give your rating</Text>
             <FlatList
               data={order?.items}
               contentContainerStyle={{ paddingTop: 10, gap: 15 }}
@@ -105,7 +152,8 @@ export default function OrderDetail() {
                   <Image source={{ uri: item?.product?.thumbnail }} className='w-10 h-10 rounded-full mr-2' resizeMode="cover" />
                   <View className='flex-1'>
                     <Text className='font-JakartaSemiBold text-lg'>{item?.product?.name}</Text>
-                    <Text className='font-JakartaMedium'>N{item?.product?.price}</Text>
+                    <Text className='font-JakartaMedium'>Quantity: {item?.quantity}</Text>
+                    <Text className='font-JakartaMedium'>Price: N{item?.product?.price}</Text>
                   </View>
                   <View className=''>
                       {
@@ -134,20 +182,23 @@ export default function OrderDetail() {
             />
         </View>
 
-        <ReactNativeModal isVisible={openRating}>
+        <ReactNativeModal isVisible={openRating} onBackdropPress={() => setOpenRating(false)}>
           <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
             <Text className="text-3xl font-JakartaBold text-center">
               Kindly rate vendor and product
             </Text>
-            <Text>Vendor</Text>
-            <InputField label='Rate vendor' placeholderText='Rate vendor' onChangeText={() => {}}/>
-            <InputField label='Rate Product' placeholderText='Rate vendor' onChangeText={() => {}}/>
+            <InputField label='Rate vendor' placeholderText='Rate vendor' onChangeText={(value) => setDetail({
+              ...detail,
+              vendorRate: Number(value)
+            })} keyboard_type="number-pad"/>
+            <InputField label='Rate Product' placeholderText='Rate vendor' keyboard_type='number-pad' onChangeText={(value) => setDetail({
+              ...detail,
+              productRate: Number(value)
+            })}/>
             <UniButton
               title="Done"
-              onPress={() =>  {
-                // setVerified(false)
-                setOpenRating(false)
-              }}
+              onPress={handleRating}
+              loading={loading}
               className="mt-5"
             />
           </View>

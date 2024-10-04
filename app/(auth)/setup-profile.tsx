@@ -1,19 +1,18 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import InputField from '@/components/InputField'
 import { icons } from '@/constants/icons'
 import UniButton from '@/components/UniButton'
 import { router } from 'expo-router'
-import { Feather } from '@expo/vector-icons'
-import RNPickerSelect from 'react-native-picker-select';
-import * as ImagePicker from 'expo-image-picker';
 import { useUser } from '@clerk/clerk-react';
 import { useMutation } from '@apollo/client'
 import * as SecureStore from 'expo-secure-store';
 import ReactNativeModal from 'react-native-modal'
 import { check } from '@/constants/images'
 import { CREATE_USER } from '@/graphql/mutation/user'
+import { createAvatar } from '@dicebear/core';
+import { lorelei } from '@dicebear/collection';
+import axios from 'axios'
 // import { check } from '@/constants/image'
 
 const ProfileSetup = () => {
@@ -57,34 +56,9 @@ const ProfileSetup = () => {
             paddingRight: 30,  // To ensure the text is not clipped by the arrow icon
         },
     });
-    
-    const [image, setImage] = useState<string>();
+  
 
-  const pickImage = async () => {
-    // Request media library permissions
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-        return;
-      }
-    }
-
-    // Launch the image picker
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true, // Allows cropping
-      aspect: [4, 3], // Aspect ratio for the cropper
-      quality: 1, // Image quality
-      base64: true
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri
-      // console.log(result)
-      setImage(uri);
-    }
-  };
+// console.log(dataUri)
 
   const handleSubmit = async () => {
     try {
@@ -119,7 +93,6 @@ const ProfileSetup = () => {
     <View className='h-screen justify-start flex flex-col gap-5 p-6'>
         <Text className='font-JakartaBold text-center text-lg mb-10'>Kindly setup your profile</Text>
       <View className=''>
-       
         <InputField label='Name' placeholderText='Name' icon={icons.user} onChangeText={(value) => setFormDetail({...formDetail, name: value})}/>
         <InputField label='Department' placeholderText='Department' icon={icons.Account} onChangeText={(value) => setFormDetail({...formDetail, department: value})}/>
         <InputField label='Level' placeholderText='Level' icon={icons.level} onChangeText={(value) => setFormDetail({...formDetail, level: value})}/>

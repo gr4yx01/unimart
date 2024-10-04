@@ -8,6 +8,29 @@ const CREATE_ORDER = gql`
 }
 `;
 
+const RATE_PRODUCT = gql`
+  mutation($id: String!, $rating: Int!) {
+  rateProduct(id: $id, rating: $rating) {
+    name
+    description
+    price
+    rating
+    stock
+    thumbnail
+  }
+}
+`
+
+const RATE_VENDOR = gql`
+ mutation($id: String!, $rating: Int!) {
+  rateVendor(id: $id, rating: $rating) {
+    id
+    name
+  }
+}`
+
 export {
-    CREATE_ORDER
+    CREATE_ORDER,
+    RATE_PRODUCT,
+    RATE_VENDOR
 }
