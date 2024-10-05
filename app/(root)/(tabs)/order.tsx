@@ -8,6 +8,7 @@ import { GET_ORDERS } from '@/graphql/queries/order'
 import { useOrderState } from '@/store/order'
 import { formatDate } from '@/utils/helper'
 import * as SecureStore from 'expo-secure-store'
+import { useUserStore } from '@/store/user'
 
 
 const getOrderStatusColor = (value: string) => {
@@ -23,21 +24,12 @@ const getOrderStatusColor = (value: string) => {
 
 const Order = () => {
   const setOrder = useOrderState((state) => state.setOrder)
-  const [userId, setUserId] = useState<string | null>('')
+  const userId = useUserStore((state) => state.userId)
   const { data } = useQuery(GET_ORDERS, {
     variables: {
       userId
     }
   })
-
-  useEffect(() => {
-    const getUserId = async () => {
-      const userId = await SecureStore.getItemAsync('userId');
-      setUserId(userId);
-    }
-
-    getUserId()
-  }, [])
 
   const routeToOrderDetail = (order: any) => {
     setOrder(order)

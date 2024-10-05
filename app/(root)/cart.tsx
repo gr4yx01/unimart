@@ -123,11 +123,15 @@ const Cart = () => {
             )}
         />
 
-        <UniButton
-            title="Checkout"
-            onPress={ makePayment}
-            loading={loading}
-        />
+            {
+                cart?.length > 0 && (
+                        <UniButton
+                            title="Checkout"
+                            onPress={ makePayment}
+                            loading={loading}
+                        />
+                )
+            }
 
         {
             proceedToPaystack && (

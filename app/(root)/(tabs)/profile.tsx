@@ -14,8 +14,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const userId = useUserStore((state) => state.userId)
 
-  console.log(userId)
-
   const { data } = useQuery(USER_PROFILE, {
     variables: {
       userId

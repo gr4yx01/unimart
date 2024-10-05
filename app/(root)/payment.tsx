@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store'
 import { useMutation } from '@apollo/client';
 import { CREATE_ORDER } from '@/graphql/mutation/order';
 import { useCartStore } from '@/store/cart';
+import { useUserStore } from '@/store/user';
 
 const Payment = () => {
   const reference  = usePaymentStore((state) => state.reference)
@@ -20,16 +21,7 @@ const Payment = () => {
   const [createOrder] = useMutation(CREATE_ORDER)
   const cart = useCartStore((state) => state.products)
   const emptyCart = useCartStore((state) => state.removeAll)
-  const [userId, setUserId] = useState<string | null>('')
-
-  useEffect(() => {
-    const getUserId = async () => {
-      const userId = await SecureStore.getItemAsync('userId');
-      setUserId(userId)
-    }
-
-    getUserId()
-  }, [])
+  const userId = useUserStore((state) => state.userId)
   // console.log(reference)
   // console.log(isPolling)
   // console.log(paymentSuccessful)
@@ -39,7 +31,7 @@ const Payment = () => {
   //             },1000)
 
   console.log(userId);
-
+  
   useEffect(() => {
     let pollingInterval: any;
 
@@ -78,7 +70,7 @@ const Payment = () => {
                 setPaymentSucessful(true)
                 setTimeout(() => {
                   router.push('/(root)/(tabs)/home')
-                },8000)
+                },3000)
               } catch (err: any) {
                 setIsPolling(false)
                 console.log(err)
@@ -90,13 +82,13 @@ const Payment = () => {
               
               setTimeout(() => {
                 router.push('/(root)/cart')
-              },8000)
+              },4000)
             }
           } else {
             setIsPolling(false)
             setTimeout(() => {
               router.push('/(root)/cart')
-            },8000)
+            },4000)
           }
         } catch (error) {
           setIsPolling(false)
