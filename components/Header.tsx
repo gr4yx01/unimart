@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { icons } from '@/constants/icons'
 import { Feather } from '@expo/vector-icons'
@@ -8,7 +8,6 @@ import { useCartStore } from '@/store/cart'
 
 const Header = () => {
   const cart = useCartStore((state) => state.products)
-
   return (
     <SafeAreaView>
       <View className='p-4 gap-4'>
@@ -21,10 +20,11 @@ const Header = () => {
               <Feather name="shopping-cart" size={24} color="black" />
             </TouchableOpacity>
         </View>
-        <View className='flex flex-row bg-white p-2 rounded-full items-center'>
+        <TouchableOpacity onPress={() => router.push('/(root)/search')} className='flex flex-row bg-white p-2 rounded-full items-center'>
             <Image source={icons.search} className='w-6 h-6 ml-2'/>
-            <TextInput className='flex-1 ml-2 font-JakartaSemiBold' placeholder='Search by name'/>
-        </View>
+            <Text className='font-JakartaSemiBold ml-2 text-gray-400'>Search by name</Text>
+            {/* <TextInput className='flex-1 ml-2 font-JakartaSemiBold' placeholder='Search by name' onChange={() => router.push('/(root)/search')}/> */}
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )

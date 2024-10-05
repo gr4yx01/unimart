@@ -10,6 +10,7 @@ import * as SecureStore from 'expo-secure-store';
 import ReactNativeModal from 'react-native-modal'
 import { check } from '@/constants/images'
 import { CREATE_USER } from '@/graphql/mutation/user'
+import RNPickerSelect from 'react-native-picker-select'
 import { createAvatar } from '@dicebear/core';
 import { lorelei } from '@dicebear/collection';
 import axios from 'axios'
@@ -22,43 +23,39 @@ const ProfileSetup = () => {
     department: '',
     level: '',
     phoneNo: '',
+    gender: '',
     universityId: 'cm1afjm0a0001u8tj6lwqq6k6'
   })
   const [setupModal, setSetupModal] = useState(false);
   const [createUser] = useMutation(CREATE_USER)
 
+  const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        backgroundColor: 'white',
+        color: 'black',  // Text color
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        paddingRight: 30,  // To ensure the text is not clipped by the arrow icon
+    },
+    inputAndroid: {
+        backgroundColor: 'white',
+        color: 'black',  // Text color
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderRadius: 30,
+        borderWidth: 1,
+        borderColor: 'gray',
+        paddingRight: 30,  // To ensure the text is not clipped by the arrow icon
+    },
+  });
+
   console.log(formDetail)
 
   const [loading, setLoading] = useState(false);
   const email = user?.primaryEmailAddress?.emailAddress;
-
-  console.log(email)
-
-    const pickerSelectStyles = StyleSheet.create({
-        inputIOS: {
-            backgroundColor: 'white',
-            color: 'black',  // Text color
-            paddingVertical: 12,
-            paddingHorizontal: 10,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: 'gray',
-            paddingRight: 30,  // To ensure the text is not clipped by the arrow icon
-        },
-        inputAndroid: {
-            backgroundColor: 'white',
-            color: 'black',  // Text color
-            paddingVertical: 12,
-            paddingHorizontal: 10,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: 'gray',
-            paddingRight: 30,  // To ensure the text is not clipped by the arrow icon
-        },
-    });
-  
-
-// console.log(dataUri)
 
   const handleSubmit = async () => {
     try {
@@ -66,14 +63,15 @@ const ProfileSetup = () => {
       const { data: userDetail } = await createUser({
         variables: {
           name: formDetail?.name,
-          email: 'henry@gmail.com',
+          email: email,
           department: formDetail?.department,
           level: formDetail?.level,
           phoneNo: formDetail?.phoneNo,
-          universityId: formDetail?.universityId
+          universityId: formDetail?.universityId,
+          gender: formDetail?.gender
         }
       })
-      
+
       await SecureStore.setItemAsync('userId', JSON.stringify(userDetail?.createUser?.id));
       setSetupModal(true)
     } catch (err: any) {
@@ -97,7 +95,15 @@ const ProfileSetup = () => {
         <InputField label='Department' placeholderText='Department' icon={icons.Account} onChangeText={(value) => setFormDetail({...formDetail, department: value})}/>
         <InputField label='Level' placeholderText='Level' icon={icons.level} onChangeText={(value) => setFormDetail({...formDetail, level: value})}/>
         <InputField label='Phone number' placeholderText='Phone number' icon={icons.contact} onChangeText={(value) => setFormDetail({...formDetail, phoneNo: value})}/>
-
+        <RNPickerSelect
+            style={pickerSelectStyles}
+            placeholder={{ label: 'Select gender', value: null }}
+            onValueChange={(value) => setFormDetail({...formDetail, gender: value})}
+            items={[
+              { label: 'male', value: 'MALE' },
+              { label: 'female', value: 'FEMALE' },
+            ]}
+        />
         <View className='mt-10'>
           <UniButton title='Complete' onPress={handleSubmit} loading={loading} />
         </View>

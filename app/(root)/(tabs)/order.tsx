@@ -1,5 +1,5 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client'
 import { GET_ORDERS } from '@/graphql/queries/order'
 import { useOrderState } from '@/store/order'
 import { formatDate } from '@/utils/helper'
-
+import * as SecureStore from 'expo-secure-store'
 
 
 const getOrderStatusColor = (value: string) => {
@@ -23,13 +23,21 @@ const getOrderStatusColor = (value: string) => {
 
 const Order = () => {
   const setOrder = useOrderState((state) => state.setOrder)
-  const userId = 'cm1kq30sl0003vto9ycu6l43z'
-  // const userId = SecureStore.getItemAsync('userId');
+  const [userId, setUserId] = useState<string | null>('')
   const { data } = useQuery(GET_ORDERS, {
     variables: {
       userId
     }
   })
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const userId = await SecureStore.getItemAsync('userId');
+      setUserId(userId);
+    }
+
+    getUserId()
+  }, [])
 
   const routeToOrderDetail = (order: any) => {
     setOrder(order)
@@ -42,6 +50,11 @@ const Order = () => {
       <FlatList 
         data={data?.orders}
         contentContainerStyle={{ padding: 15, gap: 10, paddingBottom: 110  }}
+        ListEmptyComponent={() => (
+          <View className='flex h-screen justify-center items-center'>
+            <Text className='font-JakartaSemiBold'>No orders placed</Text>
+          </View>
+        )}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => routeToOrderDetail(item)} className='bg-white p-5 space-y-3 rounded-lg'>
             <View className='flex-row flex justify-between'>

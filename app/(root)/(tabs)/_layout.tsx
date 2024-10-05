@@ -7,14 +7,29 @@ import { useOrderState } from '@/store/order'
 import { useAvailableProductsStore } from '@/store/products'
 import { useQuery } from '@apollo/client'
 import { Tabs } from 'expo-router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Image, ImageSourcePropType } from 'react-native'
+import * as SecureStore from 'expo-secure-store'
+import { useUserStore } from '@/store/user'
 
 const Layout = () => {
   const { data: fetchedProducts } = useQuery(GET_PRODUCTS)
   // const { data: allOrders } = useQuery(GET_ORDERS)
   const setProducts = useAvailableProductsStore((state) => state.setProducts)
-  const setOrders = useOrderState((state) => state.setOrders)
+  const setUserId = useUserStore((state) => state.setUserId)
+  // const setOrders = useOrderState((state) => state.setOrders)
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const userId = await SecureStore.getItemAsync('userId');
+      if (userId) {
+        const formattedUserId = userId.replace(/"/g, '')
+        setUserId(formattedUserId)
+      }
+    }
+  
+  getUserId()
+}, [])
 
   useEffect(() => {
     setProducts(fetchedProducts?.availableProducts)

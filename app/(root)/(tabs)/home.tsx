@@ -6,13 +6,15 @@ import ProductCard from '@/components/ProductCard'
 import { useAvailableProductsStore } from '@/store/products'
 import Swiper from 'react-native-swiper'
 import { CarouselOne, CarouselThree, CarouselTwo } from '@/constants/images'
+import { Tabs } from 'expo-router'
+import Header from '@/components/Header'
+
 
 const Home = () => {
   // const { data: fetchedProducts, refetch } = useQuery(GET_PRODUCTS)
   const fetchedProducts = useAvailableProductsStore((state) => state.products)
   const [selected, setSelected] = useState('ALL')
   const [products, setProduct] = useState<any[]>([])
-  const swiperRef = useRef<Swiper>(null);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,7 +22,6 @@ const Home = () => {
     setProduct(fetchedProducts)
   }, [fetchedProducts])
 
-  console.log(fetchedProducts)
 
   const onRefresh = async () => {
     setRefreshing(true);

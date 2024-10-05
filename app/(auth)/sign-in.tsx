@@ -47,7 +47,6 @@ const SignIn = () => {
           <View className='mb-10 flex justify-center items-center space-y-3'>
             <View className='flex flex-row items-end'>
               <Text className='text-[50px] text-primary-500 font-JakartaExtraBold'>Unimart</Text>
-              <Text className='text-xs text-primary-500 font-JakartaExtraBold'>Vendor</Text>
             </View>
             <Text className='text-xl font-JakartaSemiBold text-primary-500'>Sign in</Text>
           </View>

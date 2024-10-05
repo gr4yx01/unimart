@@ -1,17 +1,20 @@
 import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import UniButton from '@/components/UniButton'
 import { useQuery } from '@apollo/client'
 import { USER_PROFILE } from '@/graphql/queries/user'
 import { useAuth } from '@clerk/clerk-expo'
+import * as SecureStore from 'expo-secure-store'
+import { useUserStore } from '@/store/user'
 
 const Profile = () => {
-  const userId = 'cm1kq30sl0003vto9ycu6l43z'
   const { signOut } = useAuth()
-  // const userId = SecureStore.getItemAsync('userId');
   const [loading, setLoading] = useState(false);
+  const userId = useUserStore((state) => state.userId)
+
+  console.log(userId)
 
   const { data } = useQuery(USER_PROFILE, {
     variables: {
@@ -28,7 +31,6 @@ const Profile = () => {
     }
   }
 
-  console.log(data)
   return (
     <SafeAreaView>
       <View>
@@ -37,7 +39,7 @@ const Profile = () => {
         </View>
         <View className='flex flex-col justify-center items-center space-y-5 pt-10'>
           <View className='p-1 border-primary-500 border-2 rounded-full'>
-            <Image source={{ uri: 'https://i.pinimg.com/originals/9b/64/0c/9b640c3fc338d09964406ff200319b01.jpg' }}  resizeMode='cover' className='w-32 h-32 rounded-full'/>
+            <Image source={{ uri: 'https://i.pinimg.com/236x/5a/b4/cf/5ab4cf713b80d87fe46a5517c1b983da.jpg' }}  resizeMode='cover' className='w-32 h-32 rounded-full'/>
           </View>
           <Text className='font-JakartaSemiBold text-lg'>{data?.user?.name}</Text>
         </View>

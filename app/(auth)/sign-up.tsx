@@ -80,7 +80,6 @@ const SignUp = () => {
           <View className='mb-10 flex justify-center items-center space-y-3'>
             <View className='flex flex-row items-end'>
               <Text className='text-[50px] text-primary-500 font-JakartaExtraBold'>Unimart</Text>
-              <Text className='text-xs text-primary-500 font-JakartaExtraBold'>Vendor</Text>
             </View>
             <Text className='text-xl font-JakartaSemiBold text-primary-500'>Registration</Text>
           </View>
@@ -91,7 +90,7 @@ const SignUp = () => {
           <UniButton title='Sign Up' onPress={onSignUpPress} loading={loading}/>
           <View className='flex flex-row gap-1 items-center'>
             <Text className='font-JakartaMedium'>Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}> { /** change to sign in */}
+            <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')}>
               <Text className='font-JakartaSemiBold text-primary-500'>Sign in</Text>
             </TouchableOpacity>
           </View>

@@ -20,7 +20,16 @@ const Payment = () => {
   const [createOrder] = useMutation(CREATE_ORDER)
   const cart = useCartStore((state) => state.products)
   const emptyCart = useCartStore((state) => state.removeAll)
+  const [userId, setUserId] = useState<string | null>('')
 
+  useEffect(() => {
+    const getUserId = async () => {
+      const userId = await SecureStore.getItemAsync('userId');
+      setUserId(userId)
+    }
+
+    getUserId()
+  }, [])
   // console.log(reference)
   // console.log(isPolling)
   // console.log(paymentSuccessful)
@@ -28,9 +37,6 @@ const Payment = () => {
   // setTimeout(() => {
   //               router.push('/(root)/(tabs)/home')
   //             },1000)
-
-  // const userId = SecureStore.getItemAsync('userId');
-  const userId = 'cm1kq30sl0003vto9ycu6l43z'
 
   console.log(userId);
 

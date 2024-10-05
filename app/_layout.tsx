@@ -4,7 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import React from 'react';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloProvider, InMemoryCache, HttpLink, ApolloLink  } from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
 import { ClerkLoaded, ClerkProvider } from '@clerk/clerk-expo';
 import tokenCache from '@/utils/cache';
 import * as Linking from 'expo-linking';
@@ -41,8 +42,24 @@ export default function RootLayout() {
     return null;
   }
 
+  const errorLink = onError(({ graphQLErrors, networkError }) => {
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message, locations, path }) =>
+        console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+      );
+    }
+    if (networkError) {
+      console.error(`[Network error]: ${networkError}`);
+    }
+  });
+  
+  const httpLink = new HttpLink({
+    uri: 'http://192.168.1.187:4000/graphql',
+  });
+
   const client = new ApolloClient({
-    uri: 'http://192.168.1.187:4000/graphql',  
+    uri: 'http://192.168.1.187:4000/graphql', 
+    link: ApolloLink.from([errorLink, httpLink]),
     cache: new InMemoryCache(),
   });
 
