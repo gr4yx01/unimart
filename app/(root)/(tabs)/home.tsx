@@ -8,6 +8,8 @@ import Swiper from 'react-native-swiper'
 import { CarouselOne, CarouselThree, CarouselTwo } from '@/constants/images'
 import { Tabs } from 'expo-router'
 import Header from '@/components/Header'
+import { _fetchData } from 'ethers/lib/utils'
+
 
 
 const Home = () => {
@@ -32,10 +34,6 @@ const Home = () => {
     }
     setRefreshing(false);
   };
-
-  // useEffect(() => {
-  //   setProduct(fetchedProducts?.availableProducts?.filter((product: any) => product?.category === selected))
-  // }, [])
 
   useEffect(() => {
     const filtered = fetchedProducts?.filter((product: any) => product?.category === selected)
@@ -76,44 +74,9 @@ const Home = () => {
       value: 'ROOM ITEMS'
     },
   ]
-
-  const carousels = [
-    {
-      imgUrl: CarouselOne
-    },
-    {
-      imgUrl: CarouselTwo
-    },
-    {
-      imgUrl: CarouselThree
-    }
-  ]
   
   return (
     <View className='p-5 pt-0'>
-      {/* <View className='h-48'>
-       <Swiper
-          ref={swiperRef}
-          loop={true}
-          dot={
-            <View className="w-[8px] h-[8px] mx-1 bg-[#E2E8F0] rounded-full" />
-          }
-          activeDot={
-            <View className="w-[32px] h-[4px] mx-1 bg-[#0286FF] rounded-full" />
-          }
-         >
-         {carousels.map((item) => (
-          <View className="flex items-center justify-center p-5 h-full w-full">
-            <Image
-              source={item.imgUrl}
-              className="w-full h-[300px]"
-              resizeMode="contain"
-            />
-          </View>
-        ))}
-      </Swiper>
-
-      </View> */}
       <FlatList
         data={categories}
         renderItem={({ item }: { item: any}) => (

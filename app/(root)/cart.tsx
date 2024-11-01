@@ -5,74 +5,195 @@ import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useCartStore } from '@/store/cart'
 import UniButton from '@/components/UniButton'
-import { useMutation } from '@apollo/client'
-import { CREATE_PAYMENT_SESSION } from '@/graphql/mutation/payment'
 import { useUser } from '@clerk/clerk-expo'
-import PaystackPayment from '@/components/PaystackPayment'
 import { usePaymentStore } from '@/store/payment'
-import * as WebBrowser from 'expo-web-browser'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ethers } from 'ethers'
 
 const Cart = () => {
-    const { user } = useUser();
     const cart = useCartStore((state) => state.products)
-    // const setAuthorizationUrl = usePaymentStore((state) => state.setAuthorizationUrl)
-    const setReference = usePaymentStore((state) => state.setReference)
-    const reference = usePaymentStore((state) => state.reference)
     const setIsPolling = usePaymentStore((state) => state.setIsPolling)
-    const [proceedToPaystack, setProceedToPaystack] = useState(false)
+    const url = 'https://rpc.sepolia-api.lisk.com';
+    const provider = new ethers.providers.JsonRpcProvider(url);
+    const contractAddress = "0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f"
+    const CURRENT_ETH_PRICE_IN_NGN = 20000
+    const vendors = cart?.map((vendor) => {
+        console.log(vendor?.price)
+        console.log(vendor?.quantity)
 
-    const [showPaymentWebView, setShowPaymentWebView] = useState(false)
+        const ethAmount = (Number(vendor?.price) * Number(vendor?.quantity)) / CURRENT_ETH_PRICE_IN_NGN;
+        return {
+            wallet_address: vendor?.vendor?.wallet_address,
+            amount: ethers.utils.parseEther(ethAmount.toString())
+        }
+    })
 
-    const [authorizationUrl, setAuthorizationUrl] = useState('')
-    const [loading, setLoading] = useState(false)
+    console.log(JSON.stringify(vendors))
 
-    
-    const [createPaymentSession] = useMutation(CREATE_PAYMENT_SESSION)
+    const abi = [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "vendors",
+              "type": "address[]"
+            }
+          ],
+          "name": "PaymentInitialized",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "vendor",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PaymentProcessed",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "admin",
+          "outputs": [
+            {
+              "internalType": "address payable",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            }
+          ],
+          "name": "getBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "components": [
+                {
+                  "internalType": "address payable",
+                  "name": "wallet",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct UnimartPayment.Vendor[]",
+              "name": "vendors",
+              "type": "tuple[]"
+            }
+          ],
+          "name": "initializePayment",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "platformFee",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
 
-    const email = user?.primaryEmailAddress?.emailAddress;
+    const contract = new ethers.Contract(contractAddress, abi, provider);
+
+      const [loading, setLoading] = useState(false)
+
 
     const computeTotalAmount = () => {
         const amount = cart?.reduce((acc, product) => acc + (product?.quantity * product?.price),0)
         return amount;
     }
 
-    useEffect(() => {
-        const routeToPaystack = async () => {
-            await WebBrowser.openBrowserAsync(authorizationUrl)
-        }
-
-        if(authorizationUrl) {
-            routeToPaystack()
-        }
-    }, [authorizationUrl])
-
-    const makePayment = async () => {
-        setLoading(true)
-        const data = cart?.map((product) => {
-            return {
-                email,
-                amount: product?.quantity * product?.price,
-                subaccount_code: product?.vendor?.subaccount_code
-            }
-        })
-
-        const { data: paymentResponse } = await createPaymentSession({
-            variables: {
-                subaccounts: data
-            }
-        })
-
-        // console.log(paymentResponse);
-        setReference(paymentResponse?.createPaymentSession?.data?.reference)
-        setAuthorizationUrl(paymentResponse?.createPaymentSession?.data?.authorization_url)
-        setLoading(false)
-        setProceedToPaystack(true)
-        // setTimeout(() => {
-        //     setLoading(false)
-        //     setIsPolling(true)
-        // }, 60000)
+    async function getLatestBlock() {
+        const latestBlock = await provider.getBlockNumber();
+        console.log("The latest block's number is:", latestBlock);
     }
+
+    async function getBalance(address: string) {
+        const value = await contract.getBalance(address);
+        const balanceInEth = ethers.utils.formatEther(value.toString());
+
+        console.log(balanceInEth);
+    }
+
+    const privateKey = 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e';
+    const signer = new ethers.Wallet(privateKey, provider);
+
+    // Send 0.01 ether to a given address.
+    async function sendTx(to: any) {
+        const tx =  await signer.sendTransaction({
+            to: to,
+            value: ethers.utils.parseEther("0.001")
+        });
+
+        console.log(tx);
+    }
+
+    // async function makePayment(vendors: any) {
+    //     const totalAmount = await vendors.reduce((acc, vendor: any) => acc.add(vendor.amount), ethers.BigNumber.from(0))
+
+    //     console.log(totalAmount)
+    //     // const tx = await contract.
+    // }
+
     
     const proceedToConfirmPayment = async () => {
         setIsPolling(true)
@@ -83,7 +204,6 @@ const Cart = () => {
     
   return (
     <GestureHandlerRootView>
-
     <SafeAreaView className='relative h-screen p-3 space-y-4'>
         <View className='p-2 flex flex-row space-x-4 items-center'>
             <TouchableOpacity className=' bg-gray-400 p-2 rounded-full' onPress={() => router.back()}>
@@ -126,21 +246,12 @@ const Cart = () => {
             {
                 cart?.length > 0 && (
                         <UniButton
-                            title="Checkout"
-                            onPress={ makePayment}
+                            title="Pay with crypto"
+                            onPress={() => {}}
                             loading={loading}
                         />
                 )
             }
-
-        {
-            proceedToPaystack && (
-                <UniButton
-                title="I have paid"
-                onPress={proceedToConfirmPayment}
-                />
-            )
-        }
     </SafeAreaView>
     </GestureHandlerRootView>
 

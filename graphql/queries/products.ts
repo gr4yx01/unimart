@@ -16,7 +16,7 @@ const GET_PRODUCTS = gql`
       name
       image
       rating
-      subaccount_code
+      wallet_address
     }
   }
 }

@@ -16,7 +16,7 @@ const Onboarding = () => {
     console.log(activeIndex);
   return (
     <SafeAreaView className='flex h-full justify-between items-center bg-white'>
-        <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} className='flex justify-end items-end w-full p-5'>
+        <TouchableOpacity onPress={() => router.push('/(root)/(tabs)/home')} className='flex justify-end items-end w-full p-5'>
             <Text className='font-JakartaExtraBold text-md text-general-100'>Skip</Text>
         </TouchableOpacity>
     <Swiper 
@@ -52,7 +52,7 @@ const Onboarding = () => {
         title={isLastSlide ? "Get Started" : "Next"} 
         className="w-11/12 mt-2 mb-5"
         onPress={() => {
-            isLastSlide ? router.push('/(auth)/sign-up') : swiperRef.current?.scrollBy(1)
+            isLastSlide ? router.push('/(root)/(tabs)/home') : swiperRef.current?.scrollBy(1)
         }}
       />
     </SafeAreaView>
