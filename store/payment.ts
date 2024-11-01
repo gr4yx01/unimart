@@ -1,28 +1,16 @@
 import { create } from "zustand";
 
 interface initialState {
-    authorizationUrl: string
-    reference: string
-    isPolling: boolean
+    hash: string
 }
 
 interface Actions {
-    setAuthorizationUrl: (authorizationUrl: string) => void;
-    setReference: (reference: string) => void
-    setIsPolling: (isPolling: boolean) => void
+    setHash: (hash: string) => void;
 }
 
 export const usePaymentStore = create<initialState & Actions>((set) => ({
-    authorizationUrl: '',
-    reference: '',
-    isPolling: false,
-    setAuthorizationUrl: (authorizationUrl) => set({
-        authorizationUrl: authorizationUrl
-    }),
-    setReference: (reference) => set({
-        reference: reference
-    }),
-    setIsPolling: (isPolling) => set({
-        isPolling: isPolling
+    hash: '',
+    setHash: (hash) => set({
+        hash: hash
     })
 }))

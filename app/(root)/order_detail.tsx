@@ -109,7 +109,7 @@ export default function OrderDetail() {
                 </Text>
 
                 <Text className="text-xs leading-5 text-gray-500 mb-3">
-                Invoice Uni{order?.payment_reference}
+                Invoice Uni{order?.hash}
                 </Text>
 
                 <View className="flex-row items-end justify-end mb-1">

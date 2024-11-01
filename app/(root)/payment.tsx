@@ -12,128 +12,58 @@ import { useCartStore } from '@/store/cart';
 import { useUserStore } from '@/store/user';
 
 const Payment = () => {
-  const reference  = usePaymentStore((state) => state.reference)
-  // const reference = 'scacrmvetj'
-  // const [url, setUrl] = useState('');
-  const [isPolling, setIsPolling] = useState(usePaymentStore((state) => state.isPolling))
-  // const [isPolling, setIsPolling] = useState(true)
-  const [paymentSuccessful, setPaymentSucessful] = useState(false)
   const [createOrder] = useMutation(CREATE_ORDER)
   const cart = useCartStore((state) => state.products)
+  const hash = usePaymentStore((state) => state.hash)
   const emptyCart = useCartStore((state) => state.removeAll)
   const userId = useUserStore((state) => state.userId)
-  // console.log(reference)
-  // console.log(isPolling)
-  // console.log(paymentSuccessful)
 
-  // setTimeout(() => {
-  //               router.push('/(root)/(tabs)/home')
-  //             },1000)
-
-  console.log(userId);
-  
+  console.log('**', hash)
   useEffect(() => {
-    let pollingInterval: any;
-
-    const pollPaymentStatus = async () => {
-      if (isPolling && reference) {
-        try {
-          const response = await axios.get(`http://192.168.1.187:4000/verify-payment/${reference}`);
-          const data = await response.data;
-
-          console.log('**', data)
-
-          if (data.success) {
-            if (data.paymentStatus === 'success') {
-              setIsPolling(false);
-              const amount = cart?.reduce((acc, product) => acc + (product?.quantity * product?.price),0)
-              const items = cart?.map((product) => {
-                return {
-                  product_id: product?.id,
-                  quantity: product?.quantity,
-                }
-              })
-
-              try {
-                await createOrder({
-                  variables: {
-                        items,
-                        userId,
-                        status: 'PENDING',
-                        paymentStatus: true,
-                        paymentReference: reference,
-                        totalPrice: amount
-                  }
-                })
-                emptyCart()
-                console.log('successful');
-                setPaymentSucessful(true)
-                setTimeout(() => {
-                  router.push('/(root)/(tabs)/home')
-                },3000)
-              } catch (err: any) {
-                setIsPolling(false)
-                console.log(err)
-                Alert.alert('Order cannot be created', err)
-              }
-
-            } else {
-              setIsPolling(false);
-              
-              setTimeout(() => {
-                router.push('/(root)/cart')
-              },4000)
-            }
-          } else {
-            setIsPolling(false)
-            setTimeout(() => {
-              router.push('/(root)/cart')
-            },4000)
-          }
-        } catch (error) {
-          setIsPolling(false)
-          console.error('Error fetching payment status:', error);
+    const makeOrder = async () => {
+      const amount = cart?.reduce((acc, product) => acc + (product?.quantity * product?.price),0)
+      const items = cart?.map((product) => {
+        return {
+          product_id: product?.id,
+          quantity: product?.quantity,
         }
+      })
+  
+      try {
+        createOrder({
+          variables: {
+                items,
+                userId,
+                status: 'PENDING',
+                paymentStatus: true,
+                hash,
+                totalPrice: amount
+          }
+        })
+        emptyCart()
+        console.log('successful');
+        setTimeout(() => {
+          router.push('/(root)/(tabs)/home')
+        },3000)
+      } catch (err: any) {
+        console.log(err)
+        Alert.alert('Order cannot be created', err)
       }
-    };
-
-    // Poll every 5 seconds
-    if (isPolling) {
-      pollingInterval = setInterval(pollPaymentStatus, 5000);
     }
 
-    // Cleanup interval on unmount or when polling stops
-    return () => {
-      clearInterval(pollingInterval);
-    };
-  }, [isPolling, reference]);
+    makeOrder()
+  }, [])
+
+
 
   return (
     <>
-    {
-      isPolling ? (
-        <LottieView
-          source={require('../../assets/animation/verifying.json')}
-          style={{ flex: 1 }}
-          autoPlay
-          loop
-        />
-      ): paymentSuccessful ? (
         <LottieView
           source={require('../../assets/animation/success.json')}
           style={{ flex: 1 }}
           autoPlay
           loop={false}
         />
-      ) : (
-        <LottieView
-          source={require('../../assets/animation/failed.json')}
-          style={{ flex: 1 }}
-          autoPlay
-          loop={false}
-          />
-      )
-    }
     </>
   );
 };

@@ -11,24 +11,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ethers } from 'ethers'
 
 const Cart = () => {
-    const cart = useCartStore((state) => state.products)
-    const setIsPolling = usePaymentStore((state) => state.setIsPolling)
+    const carts = useCartStore((state) => state.products)
+    const setHash = usePaymentStore((state) => state.setHash)
     const url = 'https://rpc.sepolia-api.lisk.com';
     const provider = new ethers.providers.JsonRpcProvider(url);
     const contractAddress = "0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f"
-    const CURRENT_ETH_PRICE_IN_NGN = 20000
-    const vendors = cart?.map((vendor) => {
-        console.log(vendor?.price)
-        console.log(vendor?.quantity)
+    const CURRENT_ETH_PRICE_IN_NGN = 200000
 
-        const ethAmount = (Number(vendor?.price) * Number(vendor?.quantity)) / CURRENT_ETH_PRICE_IN_NGN;
-        return {
-            wallet_address: vendor?.vendor?.wallet_address,
-            amount: ethers.utils.parseEther(ethAmount.toString())
-        }
-    })
-
-    console.log(JSON.stringify(vendors))
 
     const abi = [
         {
@@ -156,11 +145,7 @@ const Cart = () => {
 
       const [loading, setLoading] = useState(false)
 
-
-    const computeTotalAmount = () => {
-        const amount = cart?.reduce((acc, product) => acc + (product?.quantity * product?.price),0)
-        return amount;
-    }
+    // const totalAmount = vendors.reduce((sum, vendor) => sum.add(vendor.amount), ethers.BigNumber.from(0));
 
     async function getLatestBlock() {
         const latestBlock = await provider.getBlockNumber();
@@ -178,26 +163,34 @@ const Cart = () => {
     const signer = new ethers.Wallet(privateKey, provider);
 
     // Send 0.01 ether to a given address.
-    async function sendTx(to: any) {
+    async function sendTx(vendor: any) {
+        const totalAmount = (vendor?.price * vendor?.quantity) / CURRENT_ETH_PRICE_IN_NGN
         const tx =  await signer.sendTransaction({
-            to: to,
-            value: ethers.utils.parseEther("0.001")
+            to: vendor?.vendor?.wallet_address,
+            value: ethers.utils.parseEther(totalAmount.toString())
         });
 
-        console.log(tx);
+        return tx.hash
     }
 
-    // async function makePayment(vendors: any) {
-    //     const totalAmount = await vendors.reduce((acc, vendor: any) => acc.add(vendor.amount), ethers.BigNumber.from(0))
-
-    //     console.log(totalAmount)
-    //     // const tx = await contract.
-    // }
+    async function makePayment() {
+        try {
+            let hash;
+            for(let cart of carts) {
+                hash = await sendTx(cart)
+                console.log('payment successful', hash)
+            }
+            if (hash) {
+                setHash(hash)
+            }
+            proceedToConfirmPayment()
+        } catch(err) {
+            console.error('Error initializing payment')
+        }
+    }
 
     
     const proceedToConfirmPayment = async () => {
-        setIsPolling(true)
-        console.log('working')
         router.push('/(root)/payment')
     }
 
@@ -212,13 +205,17 @@ const Cart = () => {
             <Text className='font-JakartaBold text-lg'>Cart</Text>
         </View>
         <FlatList 
-            data={cart}
+            data={carts}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ gap: 10 }}
             ListFooterComponent={() => (
                 <View className='flex flex-row items-center'>
                     <Text className='font-JakartaSemiBold'>Total amount: </Text>
-                    <Text className='font-JakartaMedium'>N {computeTotalAmount()}</Text>
+                    {/* {
+                        totalAmount && (
+                            <Text className='font-JakartaMedium'>N {ethers?.utils?.formatEther(totalAmount?.toString())}</Text>
+                        )
+                    } */}
                 </View>
             )}
             renderItem={({ item }) => (
@@ -244,10 +241,10 @@ const Cart = () => {
         />
 
             {
-                cart?.length > 0 && (
+                carts?.length > 0 && (
                         <UniButton
                             title="Pay with crypto"
-                            onPress={() => {}}
+                            onPress={() => makePayment()}
                             loading={loading}
                         />
                 )
