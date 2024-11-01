@@ -13,6 +13,12 @@ Unimart is a decentralized marketplace application where students can seamlessly
 8. [Contributing](#contributing)
 9. [Future Enhancements](#future-enhancements)
 
+[smart contract](https://github.com/gr4yx01/blockathon)
+
+[backend](https://github.com/gr4yx01/unimart_server/tree/arbitrum)
+
+[frontend](https://github.com/gr4yx01/unimart/tree/blockchain)
+
 ---
 
 ### 1. Overview
